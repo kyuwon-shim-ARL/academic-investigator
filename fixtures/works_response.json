@@ -1,0 +1,372 @@
+[
+  {
+    "id": "https://openalex.org/W3124567890",
+    "doi": "https://doi.org/10.1038/s41586-023-06291-2",
+    "title": "Deep learning approaches for protein structure prediction at scale",
+    "display_name": "Deep learning approaches for protein structure prediction at scale",
+    "publication_year": 2023,
+    "publication_date": "2023-07-15",
+    "type": "article",
+    "cited_by_count": 1245,
+    "is_retracted": false,
+    "is_paratext": false,
+    "primary_location": {
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.1038/s41586-023-06291-2",
+      "source": {
+        "id": "https://openalex.org/S137773608",
+        "display_name": "Nature",
+        "issn_l": "0028-0836",
+        "issn": ["0028-0836", "1476-4687"],
+        "is_oa": false,
+        "host_organization": "https://openalex.org/P4310319908",
+        "type": "journal"
+      }
+    },
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A5023888391",
+          "display_name": "Jane M. Richardson",
+          "orcid": "https://orcid.org/0000-0002-1234-5678"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "middle",
+        "author": {
+          "id": "https://openalex.org/A5034567891",
+          "display_name": "Robert Chen",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "last",
+        "author": {
+          "id": "https://openalex.org/A5045678912",
+          "display_name": "Sarah K. Williams",
+          "orcid": "https://orcid.org/0000-0003-9876-5432"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I136199984",
+            "display_name": "Massachusetts Institute of Technology",
+            "country_code": "US"
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "https://openalex.org/T10891",
+        "display_name": "Protein Structure Prediction",
+        "score": 0.9812
+      }
+    ],
+    "concepts": [
+      {"id": "https://openalex.org/C41008148", "display_name": "Computer science", "score": 0.85},
+      {"id": "https://openalex.org/C55493867", "display_name": "Deep learning", "score": 0.92}
+    ]
+  },
+  {
+    "id": "https://openalex.org/W3124567891",
+    "doi": "https://doi.org/10.1093/nar/gkad1004",
+    "title": "Genomic variant classification using ensemble neural networks",
+    "display_name": "Genomic variant classification using ensemble neural networks",
+    "publication_year": 2023,
+    "publication_date": "2023-09-28",
+    "type": "article",
+    "cited_by_count": 389,
+    "is_retracted": false,
+    "is_paratext": false,
+    "primary_location": {
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.1093/nar/gkad1004",
+      "source": {
+        "id": "https://openalex.org/S112952864",
+        "display_name": "Nucleic Acids Research",
+        "issn_l": "0305-1048",
+        "issn": ["0305-1048", "1362-4962"],
+        "is_oa": true,
+        "host_organization": "https://openalex.org/P4310311648",
+        "type": "journal"
+      }
+    },
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A5023888391",
+          "display_name": "Jane M. Richardson",
+          "orcid": "https://orcid.org/0000-0002-1234-5678"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "last",
+        "author": {
+          "id": "https://openalex.org/A5056789123",
+          "display_name": "David Park",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "https://openalex.org/T10234",
+        "display_name": "Computational Biology and Bioinformatics",
+        "score": 0.9534
+      }
+    ],
+    "concepts": [
+      {"id": "https://openalex.org/C86803240", "display_name": "Biology", "score": 0.88},
+      {"id": "https://openalex.org/C55493867", "display_name": "Neural network", "score": 0.82}
+    ]
+  },
+  {
+    "id": "https://openalex.org/W3124567892",
+    "doi": "https://doi.org/10.1016/j.cell.2022.05.013",
+    "title": "Single-cell multiomics reveals regulatory landscape of cellular differentiation",
+    "display_name": "Single-cell multiomics reveals regulatory landscape of cellular differentiation",
+    "publication_year": 2022,
+    "publication_date": "2022-06-20",
+    "type": "article",
+    "cited_by_count": 567,
+    "is_retracted": false,
+    "is_paratext": false,
+    "primary_location": {
+      "is_oa": false,
+      "landing_page_url": "https://doi.org/10.1016/j.cell.2022.05.013",
+      "source": {
+        "id": "https://openalex.org/S205119857",
+        "display_name": "Cell",
+        "issn_l": "0092-8674",
+        "issn": ["0092-8674", "1097-4172"],
+        "is_oa": false,
+        "host_organization": "https://openalex.org/P4310320990",
+        "type": "journal"
+      }
+    },
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A5034567891",
+          "display_name": "Robert Chen",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "middle",
+        "author": {
+          "id": "https://openalex.org/A5023888391",
+          "display_name": "Jane M. Richardson",
+          "orcid": "https://orcid.org/0000-0002-1234-5678"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "last",
+        "author": {
+          "id": "https://openalex.org/A5045678912",
+          "display_name": "Sarah K. Williams",
+          "orcid": "https://orcid.org/0000-0003-9876-5432"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I136199984",
+            "display_name": "Massachusetts Institute of Technology",
+            "country_code": "US"
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "https://openalex.org/T10234",
+        "display_name": "Computational Biology and Bioinformatics",
+        "score": 0.8912
+      }
+    ],
+    "concepts": [
+      {"id": "https://openalex.org/C86803240", "display_name": "Biology", "score": 0.92},
+      {"id": "https://openalex.org/C185592680", "display_name": "Genomics", "score": 0.87}
+    ]
+  },
+  {
+    "id": "https://openalex.org/W3124567893",
+    "doi": "https://doi.org/10.1186/s13059-021-02388-9",
+    "title": "Benchmarking spatial transcriptomics analysis methods for cellular deconvolution",
+    "display_name": "Benchmarking spatial transcriptomics analysis methods for cellular deconvolution",
+    "publication_year": 2021,
+    "publication_date": "2021-08-12",
+    "type": "article",
+    "cited_by_count": 234,
+    "is_retracted": false,
+    "is_paratext": false,
+    "primary_location": {
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.1186/s13059-021-02388-9",
+      "source": {
+        "id": "https://openalex.org/S107023349",
+        "display_name": "Genome Biology",
+        "issn_l": "1474-7596",
+        "issn": ["1474-7596", "1474-760X"],
+        "is_oa": true,
+        "host_organization": "https://openalex.org/P4310319900",
+        "type": "journal"
+      }
+    },
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A5023888391",
+          "display_name": "Jane M. Richardson",
+          "orcid": "https://orcid.org/0000-0002-1234-5678"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "last",
+        "author": {
+          "id": "https://openalex.org/A5067891234",
+          "display_name": "Emily Zhang",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "https://openalex.org/T10234",
+        "display_name": "Computational Biology and Bioinformatics",
+        "score": 0.9234
+      }
+    ],
+    "concepts": [
+      {"id": "https://openalex.org/C86803240", "display_name": "Biology", "score": 0.90},
+      {"id": "https://openalex.org/C2776034682", "display_name": "Transcriptomics", "score": 0.88}
+    ]
+  },
+  {
+    "id": "https://openalex.org/W3124567894",
+    "doi": "https://doi.org/10.1371/journal.pcbi.1009234",
+    "title": "A comprehensive framework for integrating multi-omics data in systems biology",
+    "display_name": "A comprehensive framework for integrating multi-omics data in systems biology",
+    "publication_year": 2021,
+    "publication_date": "2021-03-05",
+    "type": "article",
+    "cited_by_count": 178,
+    "is_retracted": false,
+    "is_paratext": false,
+    "primary_location": {
+      "is_oa": true,
+      "landing_page_url": "https://doi.org/10.1371/journal.pcbi.1009234",
+      "source": {
+        "id": "https://openalex.org/S202381698",
+        "display_name": "PLOS Computational Biology",
+        "issn_l": "1553-734X",
+        "issn": ["1553-734X", "1553-7358"],
+        "is_oa": true,
+        "host_organization": "https://openalex.org/P4310315706",
+        "type": "journal"
+      }
+    },
+    "authorships": [
+      {
+        "author_position": "first",
+        "author": {
+          "id": "https://openalex.org/A5056789123",
+          "display_name": "David Park",
+          "orcid": null
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      },
+      {
+        "author_position": "last",
+        "author": {
+          "id": "https://openalex.org/A5023888391",
+          "display_name": "Jane M. Richardson",
+          "orcid": "https://orcid.org/0000-0002-1234-5678"
+        },
+        "institutions": [
+          {
+            "id": "https://openalex.org/I27837315",
+            "display_name": "University of Cambridge",
+            "country_code": "GB"
+          }
+        ]
+      }
+    ],
+    "topics": [
+      {
+        "id": "https://openalex.org/T10234",
+        "display_name": "Computational Biology and Bioinformatics",
+        "score": 0.9678
+      }
+    ],
+    "concepts": [
+      {"id": "https://openalex.org/C86803240", "display_name": "Biology", "score": 0.91},
+      {"id": "https://openalex.org/C54355233", "display_name": "Systems biology", "score": 0.89}
+    ]
+  }
+]

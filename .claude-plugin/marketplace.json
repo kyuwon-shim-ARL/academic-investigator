@@ -1,0 +1,31 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "academic-investigator",
+  "description": "Academic investigation marketplace - researcher verification, lab assessment, and organization due diligence tools",
+  "owner": {
+    "name": "kyuwon-shim-ARL",
+    "email": "kyuwon.shim@ip-korea.org"
+  },
+  "plugins": [
+    {
+      "name": "academic-investigator",
+      "description": "Unified academic investigation - researcher profiling, lab assessment, organization due diligence. Combines OpenAlex API data with web research. Generates interactive HTML reports with research background explanations. Supports Korean/English bilingual output.",
+      "version": "1.0.0",
+      "author": {
+        "name": "kyuwon-shim-ARL"
+      },
+      "source": "./",
+      "category": "research",
+      "homepage": "https://github.com/kyuwon-shim-ARL/academic-investigator",
+      "tags": [
+        "academic",
+        "researcher-verification",
+        "openalex",
+        "due-diligence",
+        "html-report",
+        "bilingual"
+      ]
+    }
+  ],
+  "version": "1.0.0"
+}

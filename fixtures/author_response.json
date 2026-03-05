@@ -1,0 +1,115 @@
+{
+  "id": "https://openalex.org/A5023888391",
+  "orcid": "https://orcid.org/0000-0002-1234-5678",
+  "display_name": "Jane M. Richardson",
+  "display_name_alternatives": [
+    "J. Richardson",
+    "Jane Richardson",
+    "J. M. Richardson"
+  ],
+  "works_count": 245,
+  "cited_by_count": 18720,
+  "summary_stats": {
+    "2yr_mean_citedness": 12.4,
+    "h_index": 52,
+    "i10_index": 148,
+    "cited_by_count": 18720,
+    "works_count": 245,
+    "2yr_works_count": 18,
+    "2yr_cited_by_count": 223
+  },
+  "affiliations": [
+    {
+      "institution": {
+        "id": "https://openalex.org/I27837315",
+        "ror": "https://ror.org/00hj8s172",
+        "display_name": "University of Cambridge",
+        "country_code": "GB",
+        "type": "education"
+      },
+      "years": [2018, 2019, 2020, 2021, 2022, 2023, 2024]
+    },
+    {
+      "institution": {
+        "id": "https://openalex.org/I136199984",
+        "ror": "https://ror.org/042nb2s44",
+        "display_name": "Massachusetts Institute of Technology",
+        "country_code": "US",
+        "type": "education"
+      },
+      "years": [2012, 2013, 2014, 2015, 2016, 2017]
+    }
+  ],
+  "last_known_institutions": [
+    {
+      "id": "https://openalex.org/I27837315",
+      "ror": "https://ror.org/00hj8s172",
+      "display_name": "University of Cambridge",
+      "country_code": "GB",
+      "type": "education"
+    }
+  ],
+  "topics": [
+    {
+      "id": "https://openalex.org/T10234",
+      "display_name": "Computational Biology and Bioinformatics",
+      "count": 87,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1303",
+        "display_name": "Biochemistry"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10567",
+      "display_name": "Machine Learning in Genomics",
+      "count": 45,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1702",
+        "display_name": "Artificial Intelligence"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/17",
+        "display_name": "Computer Science"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T10891",
+      "display_name": "Protein Structure Prediction",
+      "count": 38,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1312",
+        "display_name": "Molecular Biology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/13",
+        "display_name": "Biochemistry, Genetics and Molecular Biology"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/1",
+        "display_name": "Life Sciences"
+      }
+    }
+  ],
+  "counts_by_year": [
+    {"year": 2024, "works_count": 12, "cited_by_count": 890},
+    {"year": 2023, "works_count": 15, "cited_by_count": 2340},
+    {"year": 2022, "works_count": 18, "cited_by_count": 3120},
+    {"year": 2021, "works_count": 20, "cited_by_count": 2890},
+    {"year": 2020, "works_count": 16, "cited_by_count": 2450}
+  ],
+  "works_api_url": "https://api.openalex.org/works?filter=author.id:A5023888391",
+  "updated_date": "2024-11-15T08:22:31.000000",
+  "created_date": "2016-06-24"
+}
