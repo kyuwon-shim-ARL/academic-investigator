@@ -249,8 +249,13 @@ WebSearch: "{org_name} former employee reviews"
 
 Every report MUST be generated in two formats:
 
+**Step 0: Determine output directory**
+- Default: `./acad-inv-reports/` (created automatically via `mkdir -p`)
+- If user specifies a path, use that instead
+- All 4 output files go into the same directory
+
 **Step 1: Generate Markdown report**
-- Save to `collaborations/{subject}_report.md`
+- Save to `{output_dir}/{subject}_report.md`
 - Contains all data, analysis, and background knowledge sections
 
 **Step 2: Generate Interactive HTML report via designer agent**
@@ -279,8 +284,8 @@ Design requirements:
 ```
 
 **File naming convention:**
-- `collaborations/{subject}_report.md`
-- `collaborations/{subject}_report.html`
+- `{output_dir}/{subject}_report.md`
+- `{output_dir}/{subject}_report.html`
 
 ### 6b. Research Background Section (연구 배경지식)
 
@@ -317,11 +322,15 @@ Every report MUST be generated in BOTH Korean and English:
 
 **File naming convention (4 files total):**
 ```
-collaborations/{subject}_report.md          # Korean markdown
-collaborations/{subject}_report.html        # Korean interactive HTML
-collaborations/{subject}_report_EN.md       # English markdown
-collaborations/{subject}_report_EN.html     # English interactive HTML
+{output_dir}/{subject}_report.md          # Korean markdown
+{output_dir}/{subject}_report.html        # Korean interactive HTML
+{output_dir}/{subject}_report_EN.md       # English markdown
+{output_dir}/{subject}_report_EN.html     # English interactive HTML
 ```
+
+**Output directory resolution:**
+1. If user specifies a path → use that
+2. Default → `./acad-inv-reports/` (auto-created via `mkdir -p`)
 
 **Workflow:**
 1. Generate Korean MD report first (primary language, most data sources are Korean)
