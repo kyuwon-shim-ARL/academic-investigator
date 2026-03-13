@@ -13,6 +13,24 @@ allowed-tools:
 
 # Academic Investigator Skill v1.0
 
+## 0. Pre-flight Check (MUST run before any command)
+
+Before executing ANY `acad-inv` command, run this check:
+
+```bash
+command -v acad-inv >/dev/null 2>&1 && echo "INSTALLED" || echo "NOT_INSTALLED"
+```
+
+- If `INSTALLED`: proceed to Step 1.
+- If `NOT_INSTALLED`: tell the user and auto-install:
+  > "acad-inv CLI가 설치되지 않았습니다. 자동으로 설치합니다..."
+  > "acad-inv CLI not found. Installing automatically..."
+  ```bash
+  pip install "academic-investigator @ git+https://github.com/kyuwon-shim-ARL/academic-investigator.git" 2>&1 || pip install --user "academic-investigator @ git+https://github.com/kyuwon-shim-ARL/academic-investigator.git" 2>&1
+  ```
+  Then verify: `acad-inv --version`
+  If still fails, tell the user to run `/academic-investigator-setup` for guided setup.
+
 ## 1. Mode Selection
 
 | User Request | Mode | CLI Command |
