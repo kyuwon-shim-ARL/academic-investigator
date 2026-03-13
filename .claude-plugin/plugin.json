@@ -1,28 +1,10 @@
 {
   "name": "academic-investigator",
   "version": "1.0.0",
-  "description": "Academic investigation toolkit - researcher verification, lab assessment, organization due diligence with OpenAlex API integration, interactive HTML reports, and bilingual output (Korean/English)",
+  "description": "Academic investigation toolkit - researcher verification, lab assessment, organization due diligence with OpenAlex API integration and bilingual output (Korean/English)",
   "author": {
     "name": "kyuwon-shim-ARL",
     "email": "kyuwon.shim@ip-korea.org"
   },
-  "skills": "./skills/",
-  "keywords": [
-    "academic",
-    "researcher",
-    "openalex",
-    "due-diligence",
-    "lab-check",
-    "h-index",
-    "citation-analysis",
-    "red-flags",
-    "bilingual",
-    "html-report"
-  ],
-  "license": "MIT",
-  "python": {
-    "package": "academic-investigator",
-    "entrypoint": "acad-inv",
-    "requires-python": ">=3.11"
-  }
+  "skills": "./skills/"
 }
