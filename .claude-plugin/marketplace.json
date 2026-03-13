@@ -10,7 +10,7 @@
     {
       "name": "academic-investigator",
       "description": "Unified academic investigation - researcher profiling, lab assessment, organization due diligence. Combines OpenAlex API data with web research. Generates interactive HTML reports with research background explanations. Supports Korean/English bilingual output.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "kyuwon-shim-ARL"
       },
@@ -27,5 +27,5 @@
       ]
     }
   ],
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

@@ -1,6 +1,6 @@
 {
   "name": "academic-investigator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Academic investigation toolkit - researcher verification, lab assessment, organization due diligence with OpenAlex API integration and bilingual output (Korean/English)",
   "author": {
     "name": "kyuwon-shim-ARL",
