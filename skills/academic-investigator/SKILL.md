@@ -98,6 +98,27 @@ The CLI outputs JSON by default. Parse it to extract:
 Execute the appropriate `acad-inv` command with `--format json`.
 Parse the JSON output for metrics, impact tier, and top papers.
 
+### Step 1.5: Cluster Saturation Landscape (researcher mode only, fail-soft)
+
+For `profile` mode only. Adds field-positioning context to the report.
+
+1. Write the Step 1 JSON to a file (e.g., `/tmp/acad-inv-profile.json`).
+2. Run the helper:
+   ```bash
+   bash $SKILL_DIR/scripts/landscape.sh /tmp/acad-inv-profile.json
+   ```
+   (`$SKILL_DIR` resolves to the plugin's `scripts/` parent; use the absolute path
+   `~/.claude/plugins/marketplaces/academic-investigator/scripts/landscape.sh`.)
+3. Capture stdout (single line = output JSON path) into `LANDSCAPE_FILE`.
+4. stderr will contain `[Landscape ...]` status — summarize to user in one line.
+5. Disable globally with env var `ACAD_INV_LANDSCAPE=0`.
+
+**Fail-soft**: If stdout is empty or exit != 0, set `LANDSCAPE_FILE=""` and continue
+to Step 2 normally — landscape failures must NEVER block investigation.
+
+Skipped scenarios (all print `[Landscape SKIP ...]` to stderr):
+papersift missing, author_id missing, <10 papers, OpenAlex API failure, <2 clusters.
+
 ### Step 2: WebSearch Supplementation
 Run mode-specific WebSearch queries (see Section 5 below).
 Use red flag queries from CLI output.
@@ -113,6 +134,8 @@ Combine CLI data + WebSearch findings:
 - Run `acad-inv <mode> --format md --lang <lang>` for base template
 - Fill in WebSearch-gathered sections
 - Apply language consistently
+- If `LANDSCAPE_FILE` is non-empty: Read tool the JSON, inject as "Research Landscape"
+  section per Section 6d below. If empty or `skipped: true`, omit the section silently.
 
 ## 5. Mode-Specific WebSearch Workflows
 
@@ -262,6 +285,7 @@ WebSearch: "{org_name} former employee reviews"
 8. **ALWAYS generate BOTH formats** (see Section 6a below)
 9. **ALWAYS include "연구 배경지식" section** (see Section 6b below)
 10. **ALWAYS generate bilingual outputs** (see Section 6c below)
+11. **Include "Research Landscape" section if `LANDSCAPE_FILE` exists and not skipped** (see Section 6d)
 
 ### 6a. Dual Output: Markdown + Interactive HTML
 
@@ -378,6 +402,55 @@ Change lang='ko' to lang='en', update profile initials to Latin letters.
 - Awards: provide English equivalent with context
 - Analogies: adapt culturally if needed, not literal translation
 - Keep all URLs, DOIs, journal names unchanged
+
+### 6d. Research Landscape Section (연구 랜드스케이프, profile mode only)
+
+When Step 1.5 produces a non-empty `LANDSCAPE_FILE` and its `skipped` field is `false`,
+inject a "Research Landscape" section into the MD report (and the HTML report) after
+the impact/citation analysis but before "연구 배경지식".
+
+**Read the JSON** (`LANDSCAPE_FILE`) and produce:
+
+```markdown
+## Research Landscape (연구 랜드스케이프)
+
+*Data: OpenAlex topics, fetched {fetched_at}. {n_papers_total} papers → {n_clusters_total} clusters, top {len(clusters)} analyzed.*
+
+### Cluster Portrait (연구 클러스터 분포)
+| # | Topic | Field saturation | Sub-niche saturation | 활동 기간 |
+|---|-------|------------------|----------------------|-----------|
+{for each cluster in clusters:}
+| C{cluster_id} | {topic_name} (share {topic_share:.0%}) | {saturation} ({saturation_source}) | {saturation_subniche} | {year_range} |
+
+**Two signals**: *Field saturation* is OpenAlex topic-wide trend (whole field, big picture).
+*Sub-niche saturation* is the researcher's specific cluster's paper-year distribution (their own niche).
+Divergence is informative — e.g. "field B active / sub-niche D saturated" means the researcher's
+sub-niche is fading even though the broader field is healthy.
+
+Grade legend: A = frontier (growing >30%/yr), B = active (±30%), C = slowing, D = saturated/declining.
+Source `openalex` = topic_id mapped from paper primary_topics. `fallback` = field signal unavailable, used sub-niche only.
+
+### Related Labs by Cluster (클러스터 기반 관련 연구실)
+*Researcher is excluded. Same institution dedup'd by ror_id.*
+
+{for each cluster with related_labs:}
+**C{cluster_id} — {topic_name}** ({saturation}):
+- {pi}, {institution} — citations: {citations:,}
+- ...
+
+### Positioning Insight (포지셔닝 인사이트)
+{LLM-generated 3-4 sentences synthesizing the table:
+- Is the researcher concentrated in frontier (A/B) or saturated (C/D) clusters?
+- Do related labs overlap with their co-authors, or are they distinct populations?
+- Strategic implication for someone evaluating this researcher.}
+```
+
+**HTML report**: the designer agent prompt (Section 6a Step 2) should be appended with:
+> Include "Research Landscape" section near the top — a card grid for each cluster
+> showing topic + saturation badge (color-code: A=green, B=blue, C=amber, D=red) +
+> related labs as compact rows. Use the `LANDSCAPE_FILE` JSON for data.
+
+**Omit the entire section** if `LANDSCAPE_FILE` is empty or `skipped: true`.
 
 ## 7. Quality Checklist
 
