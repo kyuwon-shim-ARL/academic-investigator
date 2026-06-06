@@ -286,6 +286,7 @@ WebSearch: "{org_name} former employee reviews"
 9. **ALWAYS include "연구 배경지식" section** (see Section 6b below)
 10. **ALWAYS generate bilingual outputs** (see Section 6c below)
 11. **Include "Research Landscape" section if `LANDSCAPE_FILE` exists and not skipped** (see Section 6d)
+12. **ALWAYS include "Session Listening Companion"** (anchors + questions + unified narrative + memory frame) for each subject — see Section 6b item 5
 
 ### 6a. Dual Output: Markdown + Interactive HTML
 
@@ -314,6 +315,7 @@ Design requirements:
 - Sortable papers table with citation bars and click-to-copy DOI
 - Co-author network visualization (CSS/SVG)
 - Research background section with story timeline, chapter cards, glossary grid
+- Session listening companion: anchors as a highlight grid (term + plain meaning + why-it-matters), questions as cards grouped by purpose, unified narrative as a readable story block, memory frame as a fill-in card
 - DDM/key research highlight cards
 - Comparison cards (not just tables) for methodology comparisons
 - Survival/experiment data as animated horizontal bars
@@ -350,6 +352,33 @@ Every report MUST include a plain-language "연구 배경지식" section that ex
 4. **Conference Prediction** (학회 발표 추론): What they might present
    - 3-5 likely topics with key messages
    - Prerequisites/background knowledge needed for each topic
+
+5. **Session Listening Companion** (세션 청취 가이드): a self-contained guide to
+   *understand, probe, and remember* this person's talk or work. Mode-agnostic —
+   works for a conference talk, a researcher profile, a lab visit, or an org meeting.
+   Everything in plain language (쉬운 말), every jargon term unpacked.
+
+   a. **Anchors** (앵커 — 들리면 집중할 신호): a table of the 7-10 core terms/moments
+      that form the backbone of their work. One row each:
+      `term | plain-language meaning | why it matters (what you miss if you skip it)`.
+      Draw from the glossary and key papers; pick the ones that carry the story.
+
+   b. **Questions to ask** (던지면 좋은 질문), grouped by purpose. Each is one sentence
+      plus a one-line "왜 이게 좋은 질문인지":
+      - 이해 깊게 (deepen): clarify what / why / how-much
+      - 한계 찌르기 (probe limits): force the real size of a claim, expose the hard
+        unsolved problem, name the mouse→human or lab→clinic gap
+      - 미래·연결 (future & links): the through-line across their projects, real-world
+        use, a sober check on the hype
+
+   c. **Unified Narrative** (하나의 이야기): weave the anchors + questions into ONE
+      flowing plain-language story (5-8 short paragraphs) — landscape → this person's
+      move → key concept → the achievement → the limitation worth probing → why it
+      matters now. No tables, no unexplained jargon. The "read once, get the whole
+      thing" artifact.
+
+   d. **3-sentence memory frame** (기억 틀): a fill-in-the-blank skeleton the reader
+      completes after the talk to lock it into memory.
 
 **Workflow for generating this section:**
 ```
@@ -464,6 +493,7 @@ Before delivering the report:
 - [ ] Lab grade confidence level noted (lab mode only)
 - [ ] Impact tier context explained (not just the label)
 - [ ] WebSearch sections all filled (no `[WebSearch required]` remaining)
+- [ ] Session Listening Companion included (anchors + questions + unified narrative + memory frame) for each subject
 
 ## 8. Important Notes
 
