@@ -166,30 +166,48 @@ def validate(output_path: str, master_path: str, log_path: Optional[str] = None)
         logger.flush()
         return 1
 
-    # master.json may be a list or a dict with a "speakers" key
-    if isinstance(master_raw, list):
-        master_records = master_raw
-    elif isinstance(master_raw, dict):
-        master_records = master_raw.get("speakers", [master_raw])
-    else:
+    def _normalize_records(raw: Any) -> Optional[List[Dict[str, Any]]]:
+        # Accept three shapes: a list of records; a {"speakers": [...]} wrapper;
+        # or a dict KEYED BY CODE ({"ST1-1": {...}}) — the SoT/dossier shape.
+        # For the keyed-dict shape, inject the key as the record's code so joins work.
+        if isinstance(raw, list):
+            return raw
+        if isinstance(raw, dict):
+            if "speakers" in raw and isinstance(raw["speakers"], list):
+                return raw["speakers"]
+            if raw and all(isinstance(v, dict) for v in raw.values()):
+                recs = []
+                for k, v in raw.items():
+                    r = dict(v)
+                    r.setdefault("code", k)
+                    if not r.get("presentationCode"):
+                        r["presentationCode"] = k
+                    recs.append(r)
+                return recs
+            return [raw]
+        return None
+
+    master_records = _normalize_records(master_raw)
+    if master_records is None:
         logger.log("CRITICAL", "load", "master.json has unexpected structure (not list or dict)")
         logger.flush()
         return 1
 
+    def _code_of(rec: Dict[str, Any]) -> Optional[str]:
+        # SoT (master) uses presentationCode; conference output uses `code`. Accept both.
+        return rec.get("presentationCode") or rec.get("code")
+
     master_by_code: Dict[str, Dict[str, Any]] = {}
     for rec in master_records:
-        code = rec.get("presentationCode")
+        code = _code_of(rec)
         if code:
             master_by_code[code] = rec
 
     master_codes = set(master_by_code.keys())
 
-    # output may be a list of speaker records or wrapped in a dict
-    if isinstance(output, list):
-        output_records = output
-    elif isinstance(output, dict):
-        output_records = output.get("speakers", [output])
-    else:
+    # output may be a list of records, a {"speakers": [...]} wrapper, or a dict keyed by code
+    output_records = _normalize_records(output)
+    if output_records is None:
         logger.log("CRITICAL", "load", "output.json has unexpected structure")
         logger.flush()
         return 1
@@ -197,7 +215,7 @@ def validate(output_path: str, master_path: str, log_path: Optional[str] = None)
     # Build output index
     output_codes: Set[str] = set()
     for rec in output_records:
-        code = rec.get("presentationCode")
+        code = _code_of(rec)
         if code:
             output_codes.add(code)
 
@@ -212,7 +230,7 @@ def validate(output_path: str, master_path: str, log_path: Optional[str] = None)
 
     # ---- Per-record checks ----
     for rec in output_records:
-        code = rec.get("presentationCode", "<no_code>")
+        code = _code_of(rec) or "<no_code>"
         name = rec.get("name", "")
 
         # Check 1: name-title leakage
