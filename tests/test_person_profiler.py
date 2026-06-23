@@ -59,8 +59,8 @@ class TestProfilePersonFound:
         profiler = PersonProfiler(client=mock_openalex_client)
         result = profiler.profile_person("Jane Richardson")
         expected_keys = {
-            "status", "display_name", "author_id", "openalex_url", "metrics",
-            "impact_tier", "top_concepts", "top_papers",
+            "status", "openalex_matched", "display_name", "author_id", "openalex_url",
+            "metrics", "impact_tier", "top_concepts", "top_papers",
             "career_metrics", "coauthors", "recommendation",
         }
         assert set(result.keys()) == expected_keys

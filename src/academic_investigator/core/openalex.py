@@ -2,16 +2,63 @@
 
 Wraps pyalex and raw HTTP requests to provide a unified interface
 for searching authors, works, institutions, and coauthorship data.
+
+Author matching uses an affiliation hard-gate (D2):
+  ``openalex_matched=True`` only when BOTH conditions hold:
+    1. name_aligned(query_name, candidate.display_name)
+    2. inst_tokens(query_affiliation) ∩ inst_tokens(candidate institutions) >= 1
+
+Candidates that fail the gate are rejected — openalex_matched stays False.
 """
 
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List, Optional
+import re
+import unicodedata
+from typing import Any, Dict, List, Optional, Set
 
 import pyalex
 import requests
 from pyalex import Authors, Institutions, Works
+
+
+# ------------------------------------------------------------------
+# Affiliation gate helpers (ported from reresolve.py)
+# ------------------------------------------------------------------
+
+def _norm(s: str) -> Set[str]:
+    """Normalise a string to a set of meaningful word tokens."""
+    s = re.sub(r"[‐-―\-]", " ", s or "")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
+    return {t for t in re.sub(r"[^a-z ]", " ", s.lower()).split() if len(t) > 1}
+
+
+_STOP: Set[str] = _norm(
+    "university department of the college school institute national republic "
+    "korea science technology center centre research division graduate faculty "
+    "laboratory lab co ltd inc and convergence interdisciplinary advanced life "
+    "sciences biotechnology engineering medicine medical food animal program major "
+    "seoul busan global city institutes"
+)
+
+
+def inst_tokens(affil: str) -> Set[str]:
+    """Return distinctive institution tokens (generic words removed)."""
+    return _norm(affil) - _STOP
+
+
+def name_aligned(query: str, display: str) -> bool:
+    """Return True when query and display name token sets overlap sufficiently.
+
+    Alignment requires the intersection to equal at least one of the two sets
+    (i.e. one name is a subset of the other), mirroring reresolve.py.
+    """
+    qn, dn = _norm(query), _norm(display)
+    if not qn or not dn:
+        return False
+    i = qn & dn
+    return bool(i) and (i == qn or i == dn)
 
 
 class OpenAlexClient:
@@ -84,9 +131,20 @@ class OpenAlexClient:
     def search_author(
         self, name: str, affiliation: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """Search for an author by name, optionally filtering by affiliation.
+        """Search for an author by name with an affiliation hard-gate (D2).
 
-        Returns the best matching author record or ``None``.
+        When ``affiliation`` is provided, a candidate is accepted ONLY when:
+          1. ``name_aligned(name, candidate.display_name)`` is True, AND
+          2. ``inst_tokens(affiliation) ∩ inst_tokens(candidate institutions) >= 1``
+
+        The returned dict includes ``openalex_matched=True`` when the gate
+        passes, ``openalex_matched=False`` otherwise.  A result is returned
+        even when openalex_matched=False so callers can inspect it; callers
+        MUST check ``openalex_matched`` before using the profile for
+        landscape/prediction generation (see D3).
+
+        When no affiliation is supplied, name alignment alone is applied and
+        ``openalex_matched`` reflects whether the top result name-aligned.
         """
         self.request_count += 1
         try:
@@ -98,17 +156,54 @@ class OpenAlexClient:
         if not results:
             return None
 
-        if affiliation and len(results) > 1:
-            affiliation_lower = affiliation.lower()
-            for result in results:
-                for aff in result.get("affiliations", []):
-                    inst_name = (
-                        aff.get("institution", {}).get("display_name", "").lower()
-                    )
-                    if affiliation_lower in inst_name or inst_name in affiliation_lower:
-                        return result
+        want = inst_tokens(affiliation) if affiliation else set()
 
-        return results[0]
+        # --- affiliation hard-gate path ---
+        if affiliation and want:
+            best: Optional[Dict[str, Any]] = None
+            best_score: float = -1.0
+            for candidate in results:
+                if not name_aligned(name, candidate.get("display_name", "")):
+                    continue
+                insts = candidate.get("last_known_institutions") or []
+                itoks: Set[str] = set()
+                for ins in insts:
+                    itoks |= inst_tokens(ins.get("display_name", ""))
+                overlap = len(want & itoks)
+                if overlap < 1:
+                    continue  # hard-gate: must have >= 1 token overlap
+                score = (
+                    overlap * 100
+                    + min((candidate.get("summary_stats", {}).get("h_index") or 0), 50) / 100.0
+                )
+                if score > best_score:
+                    best, best_score = candidate, score
+
+            if best is not None:
+                best = dict(best)
+                best["openalex_matched"] = True
+                return best
+
+            # Gate failed — return top name-aligned result tagged False (D3 will branch)
+            for candidate in results:
+                if name_aligned(name, candidate.get("display_name", "")):
+                    out = dict(candidate)
+                    out["openalex_matched"] = False
+                    return out
+            # No name alignment at all
+            out = dict(results[0])
+            out["openalex_matched"] = False
+            return out
+
+        # --- no affiliation: name-alignment only ---
+        for candidate in results:
+            if name_aligned(name, candidate.get("display_name", "")):
+                out = dict(candidate)
+                out["openalex_matched"] = True
+                return out
+        out = dict(results[0])
+        out["openalex_matched"] = False
+        return out
 
     def fetch_author_works(
         self,

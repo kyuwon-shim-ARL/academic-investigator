@@ -91,6 +91,7 @@ class PersonProfiler:
 
         return {
             "status": "found",
+            "openalex_matched": author.get("openalex_matched", False),
             "display_name": author.get("display_name", name),
             "author_id": author_id,
             "openalex_url": f"https://openalex.org/{short_id}",

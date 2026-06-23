@@ -58,7 +58,9 @@ def mock_openalex_client(monkeypatch, mock_author, mock_works, mock_work_detail)
         self.request_count += 1
         if "notfound" in name.lower():
             return None
-        return mock_author
+        result = dict(mock_author)
+        result["openalex_matched"] = True
+        return result
 
     monkeypatch.setattr(OpenAlexClient, "search_author", _search_author)
 

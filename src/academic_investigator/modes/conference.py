@@ -150,22 +150,46 @@ class ConferenceInvestigator:
             else:
                 # Academic: attempt profiling
                 profile = self.profiler.profile_person(name, affiliation, purpose=title)
-                if profile.get("status") == "found":
+                openalex_matched = profile.get("openalex_matched", False)
+                if profile.get("status") == "found" and openalex_matched:
+                    # Gate passed: full profile with landscape/prediction
                     counts["academic_found"] += 1
                     results.append({
                         "name": name,
                         "affiliation": affiliation,
                         "type": "academic",
+                        "openalex_matched": True,
                         "profile": profile,
                         "alternative_research": None,
                     })
+                elif profile.get("status") == "found" and not openalex_matched:
+                    # Gate failed (D3): skip landscape/prediction, abstract-based only
+                    counts["academic_not_found"] += 1
+                    abstract_profile = {
+                        "status": "gate_failed",
+                        "openalex_matched": False,
+                        "display_name": profile.get("display_name", name),
+                        "note": (
+                            "OpenAlex candidate found but affiliation gate failed "
+                            "(inst_tokens overlap < 1). Landscape/prediction skipped."
+                        ),
+                    }
+                    results.append({
+                        "name": name,
+                        "affiliation": affiliation,
+                        "type": "academic_not_found",
+                        "openalex_matched": False,
+                        "profile": abstract_profile,
+                        "alternative_research": self._create_alternative_research(name, affiliation),
+                    })
                 else:
-                    # Academic not found -> fall back to industry path
+                    # Academic not found in OpenAlex at all
                     counts["academic_not_found"] += 1
                     results.append({
                         "name": name,
                         "affiliation": affiliation,
                         "type": "academic_not_found",
+                        "openalex_matched": False,
                         "profile": profile,
                         "alternative_research": self._create_alternative_research(name, affiliation),
                     })

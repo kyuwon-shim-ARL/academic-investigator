@@ -227,3 +227,112 @@ class TestNormalizeId:
 
     def test_work_url(self):
         assert OpenAlexClient._normalize_id("https://openalex.org/W999") == "W999"
+
+
+# ------------------------------------------------------------------
+# D4: Affiliation hard-gate helpers
+# ------------------------------------------------------------------
+
+
+from academic_investigator.core.openalex import inst_tokens, name_aligned
+
+
+class TestAffiliationGateHelpers:
+    """Unit tests for the affiliation hard-gate helper functions."""
+
+    def test_inst_tokens_removes_stop_words(self):
+        tokens = inst_tokens("Seoul National University Department of Chemistry")
+        assert "university" not in tokens
+        assert "department" not in tokens
+        # "seoul" and "national" are in STOP; "chemistry" is the distinctive token
+        assert "chemistry" in tokens
+
+    def test_inst_tokens_distinctive_word_kept(self):
+        tokens = inst_tokens("Yonsei University College of Medicine")
+        assert "yonsei" in tokens
+
+    def test_name_aligned_exact_subset(self):
+        assert name_aligned("Kim Jiyeon", "Kim Jiyeon") is True
+
+    def test_name_aligned_partial_overlap(self):
+        # name_aligned requires intersection == one of the full token sets (subset rule)
+        # "Kim Jiyeon" tokens: {"kim","jiyeon"}; "Kim" tokens: {"kim"}
+        # {"kim"} == {"kim"} so alignment holds
+        assert name_aligned("Kim", "Kim Jiyeon") is True
+
+    def test_name_aligned_no_overlap(self):
+        assert name_aligned("Park Sujin", "Lee Minho") is False
+
+    def test_name_aligned_empty_strings(self):
+        assert name_aligned("", "Kim Jiyeon") is False
+        assert name_aligned("Kim Jiyeon", "") is False
+
+
+class TestAffiliationHardGate:
+    """D4 regression: homonym with mismatched affiliation must yield openalex_matched=False."""
+
+    def _make_candidate(self, display_name, inst_names):
+        return {
+            "id": "https://openalex.org/A9999",
+            "display_name": display_name,
+            "last_known_institutions": [{"display_name": n} for n in inst_names],
+            "summary_stats": {"h_index": 10},
+            "works_count": 50,
+            "cited_by_count": 300,
+            "topics": [],
+            "affiliations": [],
+        }
+
+    def test_homonym_wrong_affiliation_gate_fails(self):
+        """Homonym: same name, completely different institution -> openalex_matched=False."""
+        from unittest.mock import patch
+
+        candidate = self._make_candidate(
+            "Kim Jiyeon",
+            ["Harvard University Department of Chemistry"],  # US, not Korea
+        )
+
+        client = OpenAlexClient.__new__(OpenAlexClient)
+        client.email = None
+        client.api_key = None
+        client.timeout = 30
+        client.base_url = "https://api.openalex.org"
+        client.failed_requests = []
+        client.request_count = 0
+
+        with patch("academic_investigator.core.openalex.Authors") as MockAuthors:
+            MockAuthors.return_value.search.return_value.get.return_value = [candidate]
+            result = client.search_author(
+                "Kim Jiyeon",
+                affiliation="Yonsei University College of Medicine Seoul",
+            )
+
+        assert result is not None
+        assert result["openalex_matched"] is False
+
+    def test_correct_affiliation_gate_passes(self):
+        """Same name, institution tokens overlap -> openalex_matched=True."""
+        from unittest.mock import patch
+
+        candidate = self._make_candidate(
+            "Kim Jiyeon",
+            ["Yonsei University College of Medicine"],
+        )
+
+        client = OpenAlexClient.__new__(OpenAlexClient)
+        client.email = None
+        client.api_key = None
+        client.timeout = 30
+        client.base_url = "https://api.openalex.org"
+        client.failed_requests = []
+        client.request_count = 0
+
+        with patch("academic_investigator.core.openalex.Authors") as MockAuthors:
+            MockAuthors.return_value.search.return_value.get.return_value = [candidate]
+            result = client.search_author(
+                "Kim Jiyeon",
+                affiliation="Yonsei University College of Medicine Seoul",
+            )
+
+        assert result is not None
+        assert result["openalex_matched"] is True

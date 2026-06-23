@@ -65,8 +65,8 @@ class TestResearcherInvestigator:
         result = inv.investigate("Jane Richardson", "Cambridge")
         profile = result["profile"]
         expected_keys = {
-            "status", "display_name", "author_id", "openalex_url", "metrics",
-            "impact_tier", "top_concepts", "top_papers",
+            "status", "openalex_matched", "display_name", "author_id", "openalex_url",
+            "metrics", "impact_tier", "top_concepts", "top_papers",
             "career_metrics", "coauthors", "recommendation",
         }
         assert set(profile.keys()) == expected_keys

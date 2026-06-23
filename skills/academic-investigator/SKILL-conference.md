@@ -17,10 +17,43 @@ Companion skill for `academic-investigator`. Handles conference-specific protoco
 
 ## 1. Conference Initialization
 
+### 1a. Authoritative Source Discovery (SoT-first — do this before anything else)
+
+Select the highest available data tier and freeze it into `conferences/[ID]_master.json`
+(schema: see `SCHEMA-master.md`). Query master.json as **read-only fact**; never let
+OpenAlex overwrite or generate primary identity fields.
+
+Source tier ladder (pick highest available):
+
+| Tier | Source | Examples |
+|------|--------|---------|
+| 1 | Official API / structured JSON from organizer | conference REST API, exported JSON |
+| 2 | Structured program data | CSV, XLSX, XML from organizer |
+| 3 | PDF program book | Parse only when Tier 1 and 2 unavailable |
+
+**Discovery protocol:**
+```
+1. Attempt Tier 1: check for official API endpoint or organizer-published JSON.
+   Log outcome: "Tier 1 found: <URL>" or "Tier 1 not available: <reason>"
+2. If Tier 1 unavailable, attempt Tier 2: look for CSV/XLSX/XML downloads.
+   Log: "Tier 2 found: <file>" or "Tier 2 not available: <reason>"
+3. If Tier 2 unavailable, fall back to Tier 3: parse PDF program book.
+   Log: "Falling back to Tier 3 (PDF): <filename>"
+   MUST surface to user: "API/structured data not found — using program book (Tier 3)."
+```
+
+**Discovery failure semantics:**
+- "No API" (Tier 1 absent) is NOT a failure — it is a known state. Log it, proceed to Tier 2.
+- "No structured data" (Tier 2 absent) is NOT a failure — log it, proceed to Tier 3.
+- TRUE failure = all three tiers exhausted with no usable data. Surface this to the user immediately; do not proceed.
+- Never silently skip a tier. Every attempt must be logged.
+
+### 1b. Initialization steps
+
 1. Ask which conference (name, dates, location)
-2. Load config: `Read conferences/[ID].yml`
-3. Read conference source files (ebook PDF, timetable, etc.)
-4. Confirm successful data loading with user
+2. Run Authoritative Source Discovery (§1a); freeze master.json
+3. Load config: `Read conferences/[ID].yml` (supplementary metadata only)
+4. Confirm with user: data source tier used, speaker count loaded, any tier-fallback warnings
 
 ## 2. Speaker Research Protocol
 
@@ -66,6 +99,33 @@ WebSearch: "{name} {affiliation} recent achievements"
 | [name]  | [affil]     | academic/industry/institute | done/pending |
 
 ALL speakers must be "done" before proceeding.
+
+### 2f: OpenAlex Affiliation Gate and openalex_matched Branch (D2/D3/D6)
+
+The CLI enforces an affiliation hard-gate for every author lookup:
+
+**Gate rule**: A candidate is accepted (`openalex_matched=True`) ONLY when BOTH:
+1. `name_aligned(query_name, candidate.display_name)` — name tokens overlap
+2. `inst_tokens(query_affiliation) ∩ inst_tokens(candidate_institutions) >= 1` — at least one distinctive institution token matches
+
+**openalex_matched=False branch** (D3): When the gate fails, the speaker record is tagged `openalex_matched=false`. For these speakers:
+- `landscape` and `prediction` fields are SKIPPED (never generated from a mismatched identity)
+- Only abstract-based fields are returned (title, abstract, keywords from master.json)
+- `alternative_research` WebSearch queries are generated instead
+
+**Pre-output validation gate** (H1): Before delivering ANY conference document, run:
+```bash
+python scripts/validate_conference.py <output.json> <master.json>
+```
+- Exit 0 = validation passed; proceed to output
+- Exit 1 = CRITICAL finding(s); **HALT — do not deliver output**
+- warn-and-proceed is FORBIDDEN; any critical finding must block delivery
+
+Failure cases that trigger HALT:
+- Name-title leakage (`[a-z][A-Z]` glue or >3 words in name field)
+- Phantom presentationCode in output (not present in master.json)
+- Identity mismatch (output name does not token-agree with SoT name)
+- Array count parity failure (anchors/anchors_en or prediction/prediction_en length mismatch)
 
 ## 3. Abstract Deep Analysis Protocol
 
