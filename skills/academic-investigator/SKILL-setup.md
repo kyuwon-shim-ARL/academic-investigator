@@ -71,6 +71,34 @@ Replace `USER_PROVIDED_EMAIL` with the actual email the user provides.
 If the user declines to provide email, skip this step and note:
 > "이메일 없이도 사용 가능하지만, 속도 제한이 있을 수 있습니다."
 
+### Step 4b: Configure OpenAlex API Key (recommended for large/conference runs)
+
+The tool **prefers an API key when one is available** (`OPENALEX_API_KEY` env > config.toml).
+The free polite pool now enforces a **small daily budget** that can run out mid-batch — when
+it does, the API silently returns empty results, which downstream look like false
+"ambiguous"/no-match rows. A key avoids this.
+
+Check first, then nudge only if missing:
+
+```bash
+[ -n "$OPENALEX_API_KEY" ] && echo "API key already set — preferred." || echo "No key set."
+```
+
+If no key is set, gently guide the user (do **not** block — the tool still runs on the free pool):
+> "대량/학회 조회는 OpenAlex 무료 키 등록을 권장합니다 (무료 티어 있음). 키가 있으면 자동 우선 사용됩니다."
+> "For conference/batch runs, registering a free OpenAlex key is recommended; if set, it is used automatically."
+>
+> 1. Get a key (free tier): https://openalex.org/pricing
+> 2. `export OPENALEX_API_KEY='your-key'` (add to `~/.bashrc`), **or** add to config:
+
+```bash
+cat >> ~/.config/academic-investigator/config.toml << 'TOML'
+api_key = "USER_PROVIDED_KEY"
+TOML
+```
+
+The runtime also prints a one-line reminder on first call when no key is found.
+
 ### Step 5: Quick Smoke Test
 
 Run a red-flags test (no API call needed):

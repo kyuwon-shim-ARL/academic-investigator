@@ -19,14 +19,39 @@ def _load_config() -> dict:
     return {}
 
 
+_API_KEY_NUDGE_SHOWN = False
+
+
 def _get_credentials(args) -> tuple[str | None, str | None]:
-    """Get email and api_key from args, env vars, or config file."""
+    """Get email and api_key from args, env vars, or config file.
+
+    Resolution order (api_key preferred when present, since it bypasses the
+    free pool's small daily budget that can exhaust mid-run on large batches):
+    CLI arg > OPENALEX_API_KEY env > config.toml.
+    """
     import os
     config = _load_config()
     openalex_config = config.get("openalex", {})
 
     email = args.email or os.environ.get("OPENALEX_EMAIL") or openalex_config.get("email")
     api_key = getattr(args, 'api_key', None) or os.environ.get("OPENALEX_API_KEY") or openalex_config.get("api_key")
+
+    global _API_KEY_NUDGE_SHOWN
+    if not _API_KEY_NUDGE_SHOWN:
+        _API_KEY_NUDGE_SHOWN = True
+        if api_key:
+            print("[academic-investigator] OpenAlex API key detected — using premium tier.", file=sys.stderr)
+        else:
+            print(
+                "[academic-investigator] No OpenAlex API key found — running on the free pool.\n"
+                "  The free pool now enforces a small daily budget that can run out mid-batch\n"
+                "  (silently returning empty results, which look like 'ambiguous'/no-match).\n"
+                "  For conference/large runs, register a free key and set it once:\n"
+                "    1) Get a key: https://openalex.org/pricing  (free tier available)\n"
+                "    2) export OPENALEX_API_KEY='your-key'   (add to ~/.bashrc)\n"
+                "  Continuing on the free pool for now.",
+                file=sys.stderr,
+            )
 
     return email, api_key
 

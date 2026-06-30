@@ -56,8 +56,12 @@ Before running any CLI command:
    ```bash
    export OPENALEX_EMAIL="user@example.com"
    ```
-2. Determine mode from user request
-3. Gather required info: target name, affiliation, purpose
+2. Check `OPENALEX_API_KEY`. **If set, it is used automatically (preferred — bypasses the
+   free pool's small daily budget that can exhaust mid-batch and silently return empty
+   results).** If not set, do not block; for conference/large runs gently suggest registering
+   a free key (https://openalex.org/pricing) — see SKILL-setup.md Step 4b.
+3. Determine mode from user request
+4. Gather required info: target name, affiliation, purpose
 
 ## 3. CLI Usage Reference
 
@@ -119,6 +123,39 @@ to Step 2 normally — landscape failures must NEVER block investigation.
 Skipped scenarios (all print `[Landscape SKIP ...]` to stderr):
 papersift missing, author_id missing, <10 papers, OpenAlex API failure, <2 clusters.
 
+### Step 1.6: Field Landscape — REAL external research (MANDATORY, all modes)
+
+**Why**: Step 1.5's cluster landscape is derived from the *subject's own papers* (title-based,
+often noisy) and CANNOT reveal where the researcher actually stands in their field. A correct
+valuation/positioning REQUIRES the *real* research landscape — the actual competing/collaborating
+groups, the live sub-themes, and recent trends — which only external literature research surfaces.
+This step is therefore **required, not optional**, and its output MUST drive the positioning.
+
+**Procedure**:
+1. From Step 1–3 data, identify the subject's **2–4 core research areas** (e.g. for a
+   computational antimicrobial researcher: "MD of Lipid II-targeting antimicrobial peptides",
+   "bacterial Topo-I as a drug target", "computational AMR drug discovery").
+2. Spawn **one `document-specialist` agent per area IN PARALLEL** (model `sonnet`). Each agent
+   does real web research and returns a structured deliverable:
+   - **Groups table**: the major real PIs/labs in that area (name + institution + their specific
+     angle + URL) — both computational and experimental groups that define the field.
+   - **Clusters**: the live sub-themes of activity in that area right now.
+   - **Trends**: what's hot / maturing / emerging over the last ~3–5 years.
+   - **Subject positioning**: where THIS researcher sits relative to those groups (leading voice /
+     niche contributor / the computational arm complementing experimentalists / relative scale).
+   - Instruct each agent: "your final message IS the deliverable; be concrete with real
+     PIs/institutions + URLs; flag uncertainty; accuracy over breadth."
+3. **Robustness**: agents sometimes return a terse final message (e.g. "Done"). If a deliverable
+   comes back empty/terse, resume it via `SendMessage` (using the returned `agentId`) asking it to
+   "paste your FULL structured deliverable now — complete content, not a summary." Do not proceed
+   to the report with empty field-landscape data.
+4. Synthesize the per-area deliverables into a single **Field Research Landscape** section
+   (Section 6e) and base the **Positioning** on it.
+
+**Fail-soft but loud**: if external research genuinely yields nothing for an area, say so
+explicitly in the report ("field landscape for X could not be established") rather than silently
+omitting — never let absence read as "no competitors / unique."
+
 ### Step 2: WebSearch Supplementation
 Run mode-specific WebSearch queries (see Section 5 below).
 Use red flag queries from CLI output.
@@ -136,6 +173,8 @@ Combine CLI data + WebSearch findings:
 - Apply language consistently
 - If `LANDSCAPE_FILE` is non-empty: Read tool the JSON, inject as "Research Landscape"
   section per Section 6d below. If empty or `skipped: true`, omit the section silently.
+- ALWAYS inject the **Field Research Landscape** section from Step 1.6 (Section 6e) and make the
+  Positioning Insight rest on it — this is mandatory, not conditional on the self-paper landscape.
 
 ## 5. Mode-Specific WebSearch Workflows
 
@@ -286,7 +325,8 @@ WebSearch: "{org_name} former employee reviews"
 9. **ALWAYS include "연구 배경지식" section** (see Section 6b below)
 10. **ALWAYS generate bilingual outputs** (see Section 6c below)
 11. **Include "Research Landscape" section if `LANDSCAPE_FILE` exists and not skipped** (see Section 6d)
-12. **ALWAYS include "Session Listening Companion"** (anchors + questions + unified narrative + memory frame) for each subject — see Section 6b item 5
+12. **ALWAYS include "Field Research Landscape" section** (real external-literature landscape from Step 1.6) and base the researcher's positioning on it — see Section 6e. This is mandatory for every report.
+13. **ALWAYS include "Session Listening Companion"** (anchors + questions + unified narrative + memory frame) for each subject — see Section 6b item 5
 
 ### 6a. Dual Output: Markdown + Interactive HTML
 
@@ -481,12 +521,61 @@ Source `openalex` = topic_id mapped from paper primary_topics. `fallback` = fiel
 
 **Omit the entire section** if `LANDSCAPE_FILE` is empty or `skipped: true`.
 
+### 6e. Field Research Landscape Section (실제 분야 랜드스케이프, MANDATORY, all modes)
+
+Built from the Step 1.6 parallel `document-specialist` research. Unlike Section 6d (which is
+derived from the subject's *own* papers and may be skipped), **this section is required in every
+report** — it is what lets you position the researcher against the *actual* field, which their own
+publication record cannot reveal. Place it right after the self-paper "Research Landscape" (6d) if
+that exists, otherwise after the impact/career analysis, and before "연구 배경지식".
+
+Produce, per core area researched in Step 1.6:
+
+```markdown
+## Field Research Landscape (실제 분야 랜드스케이프)
+
+*외부 문헌 조사 기반 (document-specialist 병렬 리서치, {date}). 연자 본인 논문이 아닌 분야 전체 지형.*
+
+### {Area 1 name} — 주요 그룹
+| PI / Lab | 소속 | 연구 각도(angle) |
+|---|---|---|
+| {real PI} | {institution} | {their specific contribution} ([link]) |
+...
+
+**활동 클러스터(live sub-themes)**: {2-4 current sub-themes}
+**최근 동향(3–5년)**: {what's hot / maturing / emerging}
+
+### {Area 2 name} — 주요 그룹
+... (same structure) ...
+
+### Positioning — 이 분야에서 연자의 위치
+{3–5 sentences GROUNDED IN the groups above:
+- Is the subject a leading voice, a niche specialist, or the computational arm complementing
+  experimental groups? Name the specific groups they sit beside or behind.
+- Where is their distinctive contribution vs the crowded parts of the field?
+- Honest scale calibration vs flagship labs (don't inflate; don't undersell).
+- What this means for someone evaluating/hosting them.}
+```
+
+**Rules**:
+- Use REAL named PIs/institutions with URLs from the research — never invent. Flag any uncertainty.
+- The Positioning paragraph MUST reference the actual groups (not generic praise). This is the
+  payload of the whole section.
+- If an area's landscape could not be established, say so explicitly rather than omitting silently.
+
+**HTML report**: append to the designer agent prompt (Section 6a Step 2):
+> Include a "Field Research Landscape" section: per area, a compact groups table (PI + institution
+> + angle, PI/inst linked) + a "live clusters" chip row + a "trends" line, followed by a
+> highlighted **Positioning** callout card that states where the subject stands relative to the
+> named groups. This section is the basis for valuing the researcher — make it prominent.
+
 ## 7. Quality Checklist
 
 Before delivering the report:
 - [ ] All claims cross-verified (Google Scholar + official pages)
 - [ ] Retraction Watch checked for all researchers
 - [ ] Field-specific h-index context provided (differs by discipline)
+- [ ] **Field Research Landscape** section present (real external groups) and positioning is grounded in those named groups (Step 1.6 / Section 6e)
 - [ ] No single-metric evaluations (h-index alone is insufficient)
 - [ ] All sources cited with links
 - [ ] Red Flags section included (even if "none found")
